@@ -1,0 +1,81 @@
+module traffic(
+input wire clk,
+input wire reset,
+output reg [2:0] light_NS,
+output reg [2:0] light_EW
+    );
+parameter s0=2'b00,
+			 s1=2'b01,
+			 s2=2'b10,
+			 s3=2'b11;
+parameter green_time =10;
+parameter yellow_time=3;
+
+reg [1:0] current_state,next_stage;
+reg [3:0] counter;
+
+always @(posedge clk or posedge reset) begin 
+if (reset) begin
+current_state<=s0;
+counter<=0;
+end
+
+else begin
+if(counter >=(get_limit(current_state)-1))begin
+current_state <= next_stage;
+counter<=0;
+end else begin
+counter <= counter +1;
+end 
+end 
+end
+
+always@(*)begin
+case (current_state)
+s0:next_stage=s1;
+s1:next_stage=s2;
+s2:next_stage=s3;
+s3:next_stage=s0;
+default:next_stage=s0;
+endcase
+end
+
+always@(*)begin
+case (current_state)
+s0:begin 
+light_NS=3'b001;
+light_EW=3'b100;
+end
+
+s1:begin 
+light_NS=3'b010;
+light_EW=3'b100;
+end
+
+s2:begin 
+light_NS=3'b100;
+light_EW=3'b001;
+end
+
+s3:begin 
+light_NS=3'b100;
+light_EW=3'b010;
+end
+
+default: begin
+light_NS=3'b100;
+light_EW=3'b100;
+end
+endcase
+end
+
+function [3:0] get_limit(input [1:0] state);
+case (state)
+s0,s2: get_limit=green_time;
+s1,s3:get_limit=yellow_time;
+default:get_limit=green_time;
+endcase
+endfunction
+
+
+endmodule
