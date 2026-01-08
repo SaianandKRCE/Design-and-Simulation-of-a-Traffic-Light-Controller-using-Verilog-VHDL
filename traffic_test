@@ -1,0 +1,34 @@
+module traffic_test;
+
+	// Inputs
+	reg clk;
+	reg reset;
+
+	// Outputs
+	wire [2:0] light_NS;
+	wire [2:0] light_EW;
+
+	// Instantiate the Unit Under Test (UUT)
+	traffic uut (
+		.clk(clk), 
+		.reset(reset), 
+		.light_NS(light_NS), 
+		.light_EW(light_EW)
+	);
+always #5 clk = ~clk;
+
+	initial begin
+		// Initialize Inputs
+		clk = 0;
+		reset = 1;
+		#20 reset=0;
+		// Wait 100 ns for global reset to finish
+		#200;
+		//$stop;
+        
+		// Add stimulus here
+
+	end
+      
+endmodule
+
